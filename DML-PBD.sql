@@ -1,0 +1,257 @@
+INSERT INTO hotel (nombre, direccion, telefono) VALUES
+('Hotel Paradise', 'San Salvador Centro', '2222-1111'),
+('Hotel Costa Azul', 'La Libertad', '2222-2222'),
+('Hotel Montaña Verde', 'Santa Ana', '2222-3333'),
+('Hotel Las Palmeras', 'Sonsonate', '2222-4444'),
+('Hotel Ejecutivo', 'San Miguel', '2222-5555'),
+('Hotel Vista Hermosa', 'Ahuachapan', '2222-6666'),
+('Hotel El Descanso', 'Usulutan', '2222-7777');
+
+INSERT INTO tipo_habitacion (descripcion, precio_noche) VALUES
+('Individual', 45.00),
+('Doble', 75.00),
+('Suite', 150.00),
+('Familiar', 120.00),
+('Ejecutiva', 95.00),
+('Premium', 180.00),
+('Presidencial', 300.00);
+
+INSERT INTO huesped
+(dui_pasaporte, nombre, apellido, email, telefono)
+VALUES
+('01234567-8','Carlos','Martinez','carlos@gmail.com','7000-1111'),
+('02345678-9','Ana','Lopez','ana@gmail.com','7000-2222'),
+('03456789-0','Jose','Ramirez','jose@gmail.com','7000-3333'),
+('04567890-1','Maria','Hernandez','maria@gmail.com','7000-4444'),
+('05678901-2','Luis','Garcia','luis@gmail.com','7000-5555'),
+('06789012-3','Sofia','Castro','sofia@gmail.com','7000-6666'),
+('07890123-4','Miguel','Ruiz','miguel@gmail.com','7000-7777');
+
+INSERT INTO habitacion
+(numero,piso,estado,id_tipo,id_hotel)
+VALUES
+('101',1,'Disponible',1,1),
+('201',2,'Disponible',2,1),
+
+('101',1,'Ocupada',2,2),
+('201',2,'Disponible',3,2),
+
+('101',1,'Disponible',4,3),
+('201',2,'Mantenimiento',5,3),
+
+('101',1,'Disponible',6,4),
+('201',2,'Disponible',7,4),
+
+('101',1,'Ocupada',1,5),
+('201',2,'Disponible',3,5),
+
+('101',1,'Disponible',2,6),
+('201',2,'Disponible',4,6),
+
+('101',1,'Disponible',5,7),
+('201',2,'Disponible',6,7);
+
+INSERT INTO reservacion
+(fecha_reserva,fecha_inicio,fecha_fin,estado_reserva,id_huesped,id_habitacion)
+VALUES
+('2026-05-01','2026-06-01','2026-06-05','Activa',1,1),
+('2026-05-02','2026-06-06','2026-06-10','Finalizada',2,3),
+('2026-05-03','2026-06-08','2026-06-12','Activa',3,5),
+('2026-05-04','2026-06-10','2026-06-14','Cancelada',4,7),
+('2026-05-05','2026-06-15','2026-06-18','Finalizada',5,9),
+('2026-05-06','2026-06-20','2026-06-25','Activa',6,11),
+('2026-05-07','2026-06-22','2026-06-27','Finalizada',7,13);
+
+INSERT INTO check_in_out
+(fecha_entrada,fecha_salida,id_reservacion)
+VALUES
+('2026-06-01 14:00:00',NULL,1),
+('2026-06-06 13:00:00','2026-06-10 12:00:00',2),
+('2026-06-08 15:00:00',NULL,3),
+('2026-06-10 14:30:00',NULL,4),
+('2026-06-15 13:00:00','2026-06-18 11:00:00',5),
+('2026-06-20 14:00:00',NULL,6),
+('2026-06-22 15:00:00','2026-06-27 12:00:00',7);
+
+INSERT INTO servicio
+(nombre_servicio,costo_unitario)
+VALUES
+('Restaurante',15.00),
+('Lavanderia',8.00),
+('Spa',30.00),
+('Transporte',20.00),
+('Minibar',10.00),
+('Gimnasio',12.00),
+('Tour Turistico',40.00);
+
+
+INSERT INTO consumo_servicio
+(cantidad,fecha_consumo,id_reservacion,id_servicio)
+VALUES
+(2,'2026-06-02 08:00:00',1,1),
+(1,'2026-06-07 10:00:00',2,2),
+(3,'2026-06-09 18:00:00',3,5),
+(2,'2026-06-11 11:00:00',4,4),
+(1,'2026-06-16 15:00:00',5,3),
+(4,'2026-06-21 20:00:00',6,1),
+(2,'2026-06-23 09:00:00',7,7);
+
+-- =========================
+--        Updates
+-- =========================
+
+--1. Cambiar teléfono del Hotel Paradise
+UPDATE hotel
+SET telefono = '2222-9999'
+WHERE nombre = 'Hotel Paradise';
+
+--2. Aumentar el precio de la habitación Suite
+UPDATE tipo_habitacion
+SET precio_noche = 165.00
+WHERE descripcion = 'Suite';
+
+--3. Actualizar email del huésped Carlos Martínez
+UPDATE huesped
+SET email = 'carlos.martinez@gmail.com'
+WHERE dui_pasaporte = '01234567-8';
+
+--4. Cambiar estado de una habitación de mantenimiento a disponible
+UPDATE habitacion
+SET estado = 'Disponible'
+WHERE numero = '201'
+  AND id_hotel = 3;
+
+--5. Cambiar estado de una reservación activa a finalizada
+UPDATE reservacion
+SET estado_reserva = 'Finalizada'
+WHERE id_reservacion = 1;
+
+-- =========================
+--        Deletes
+-- =========================
+-- 1. Eliminar un consumo de servicio específico
+DELETE FROM consumo_servicio
+WHERE id_reservacion = 4
+  AND id_servicio = 4;
+
+-- 2. Eliminar Huespéd
+-- Ver huésped que se va a eliminar
+SELECT * FROM huesped
+WHERE id_huesped = 1;
+
+-- Ver reservaciones relacionadas
+SELECT * FROM reservacion
+WHERE id_huesped = 1;
+
+-- Ver check-in/out relacionados
+SELECT cio.* 
+FROM check_in_out cio
+INNER JOIN reservacion r 
+    ON cio.id_reservacion = r.id_reservacion
+WHERE r.id_huesped = 1;
+
+-- Eliminar huésped
+DELETE FROM huesped
+WHERE id_huesped = 1;
+
+-- 3. Eliminar Hotel
+-- Ver hotel que se va a eliminar
+SELECT * FROM hotel
+WHERE id_hotel = 3;
+
+-- Ver habitaciones del hotel
+SELECT * FROM habitacion
+WHERE id_hotel = 3;
+
+-- Ver reservaciones relacionadas con habitaciones del hotel
+SELECT r.*
+FROM reservacion r
+INNER JOIN habitacion h 
+    ON r.id_habitacion = h.id_habitacion
+WHERE h.id_hotel = 3;
+
+-- Ver check-in/out relacionados
+SELECT cio.*
+FROM check_in_out cio
+INNER JOIN reservacion r 
+    ON cio.id_reservacion = r.id_reservacion
+INNER JOIN habitacion h 
+    ON r.id_habitacion = h.id_habitacion
+WHERE h.id_hotel = 3;
+
+-- Ver consumos relacionados
+SELECT cs.*
+FROM consumo_servicio cs
+INNER JOIN reservacion r 
+    ON cs.id_reservacion = r.id_reservacion
+INNER JOIN habitacion h 
+    ON r.id_habitacion = h.id_habitacion
+WHERE h.id_hotel = 3;
+
+-- Eliminar hotel
+DELETE FROM hotel
+WHERE id_hotel = 3;
+
+
+-- 4. Eliminar tipo de habitación
+BEGIN;
+
+-- Ver tipo de habitación que se va a eliminar
+SELECT *
+FROM tipo_habitacion
+WHERE id_tipo = 6;
+
+-- Ver habitaciones relacionadas
+SELECT *
+FROM habitacion
+WHERE id_tipo = 6;
+
+-- Ver reservaciones relacionadas
+SELECT r.*
+FROM reservacion r
+INNER JOIN habitacion h
+    ON r.id_habitacion = h.id_habitacion
+WHERE h.id_tipo = 6;
+
+-- Ver check_in_out relacionados
+SELECT cio.*
+FROM check_in_out cio
+INNER JOIN reservacion r
+    ON cio.id_reservacion = r.id_reservacion
+INNER JOIN habitacion h
+    ON r.id_habitacion = h.id_habitacion
+WHERE h.id_tipo = 6;
+
+-- Ver consumos relacionados
+SELECT cs.*
+FROM consumo_servicio cs
+INNER JOIN reservacion r
+    ON cs.id_reservacion = r.id_reservacion
+INNER JOIN habitacion h
+    ON r.id_habitacion = h.id_habitacion
+WHERE h.id_tipo = 6;
+
+-- Eliminar tipo de habitación y mostrar el registro eliminado
+DELETE FROM tipo_habitacion
+WHERE id_tipo = 6
+
+RETURNING *;
+
+-- 5. Eliminar Servicio
+BEGIN;
+
+-- Ver servicio que se va a eliminar
+SELECT *
+FROM servicio
+WHERE id_servicio = 7;
+
+-- Ver consumos asociados
+SELECT *
+FROM consumo_servicio
+WHERE id_servicio = 7;
+
+-- Eliminar servicio y mostrar el registro eliminado
+DELETE FROM servicio
+WHERE id_servicio = 7
+RETURNING *;
+
