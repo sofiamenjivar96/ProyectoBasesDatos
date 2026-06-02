@@ -129,6 +129,11 @@ WHERE id_reservacion = 1;
 -- =========================
 --        Deletes
 -- =========================
+-- NOTA:
+-- No se incluyen deletes de hotel, huésped o tipo_habitación porque el modelo usa ON DELETE RESTRICT y no permite eliminar
+-- registros con dependencias (reservaciones, habitaciones, etc.)
+
+
 DELETE FROM consumo_servicio
 WHERE id_reservacion = 4
   AND id_servicio = 4;
@@ -197,3 +202,14 @@ INNER JOIN habitacion ha
     ON r.id_habitacion = ha.id_habitacion
 INNER JOIN tipo_habitacion th 
     ON ha.id_tipo = th.id_tipo;
+--SELECT finales de verificacion
+SELECT * FROM hotel;
+SELECT * FROM tipo_habitacion;
+SELECT * FROM habitacion;
+SELECT * FROM huesped;
+SELECT * FROM reservacion;
+SELECT * FROM check_in_out;
+SELECT * FROM servicio;
+SELECT * FROM consumo_servicio;
+SELECT * FROM empleado;
+SELECT * FROM factura;
