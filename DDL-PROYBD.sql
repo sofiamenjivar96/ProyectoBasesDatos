@@ -45,7 +45,7 @@ CREATE TABLE habitacion (
     numero  VARCHAR(10) NOT NULL,
     piso INT,
     estado VARCHAR(20) NOT NULL DEFAULT 'Disponible',
-    id_tipoINT NOT NULL,
+    id_tipo INT NOT NULL,
     id_hotel INT NOT NULL,
     CONSTRAINT fk_habitacion_tipo FOREIGN KEY (id_tipo) REFERENCES tipo_habitacion(id_tipo)
         ON UPDATE CASCADE ON DELETE RESTRICT,
