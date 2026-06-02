@@ -22,7 +22,7 @@ DROP TABLE IF EXISTS hotel CASCADE;
 --               TABLA: Hotel
 -- ==========================================
 CREATE TABLE hotel (
-    id_hotel SERIAL PRIMARY KEY,
+    id_hotel BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     direccion TEXT NOT NULL,
     telefono VARCHAR(20)
@@ -31,7 +31,7 @@ CREATE TABLE hotel (
 --          TABLA: tipo_habitacion
 -- ==========================================
 CREATE TABLE tipo_habitacion (
-    id_tipo SERIAL PRIMARY KEY,
+    id_tipo BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     descripcion TEXT,
     precio_noche NUMERIC(10,2) NOT NULL,
     CONSTRAINT ck_precio_habitacion CHECK (precio_noche > 0)
@@ -41,14 +41,14 @@ CREATE TABLE tipo_habitacion (
 --            TABLA: Habitacion
 -- ==========================================
 CREATE TABLE habitacion (
-    id_habitacion SERIAL PRIMARY KEY,
+    id_habitacion BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY ,
     numero  VARCHAR(10) NOT NULL,
     piso INT,
     estado VARCHAR(20) NOT NULL DEFAULT 'Disponible',
     id_tipo INT NOT NULL,
     id_hotel INT NOT NULL,
     CONSTRAINT fk_habitacion_tipo FOREIGN KEY (id_tipo) REFERENCES tipo_habitacion(id_tipo)
-        ON UPDATE CASCADE ON DELETE RESTRICT,
+  ON UPDATE CASCADE ON DELETE RESTRICT
     CONSTRAINT fk_habitacion_hotel FOREIGN KEY (id_hotel) REFERENCES hotel(id_hotel)
         ON UPDATE CASCADE ON DELETE RESTRICT,
     CONSTRAINT ck_estado_habitacion CHECK (estado IN ('Disponible', 'Ocupada', 'Mantenimiento')),
@@ -59,7 +59,7 @@ CREATE TABLE habitacion (
 --              TABLA: huesped
 -- ==========================================
 CREATE TABLE huesped (
-    id_huesped SERIAL PRIMARY KEY,
+    id_huesped BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     dui_pasaporte VARCHAR(30) NOT NULL,
     nombre VARCHAR(100) NOT NULL,
     apellido VARCHAR(100) NOT NULL,
@@ -74,7 +74,7 @@ ADD CONSTRAINT uq_huesped_dui UNIQUE (dui_pasaporte);
 --            TABLA: reservacion
 -- ==========================================
 CREATE TABLE reservacion (
-    id_reservacion SERIAL PRIMARY KEY,
+    id_reservacion BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     fecha_reserva DATE NOT NULL,
     fecha_inicio DATE NOT NULL,
     fecha_fin DATE NOT NULL,
@@ -93,7 +93,7 @@ CREATE TABLE reservacion (
 --            TABLA: check_in_out
 -- ==========================================
 CREATE TABLE check_in_out (
-    id_registro SERIAL PRIMARY KEY,
+    id_registro BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     fecha_entrada TIMESTAMP,
     fecha_salida TIMESTAMP,
     id_reservacion INT NOT NULL,
@@ -109,7 +109,7 @@ CHECK (fecha_salida IS NULL OR fecha_salida > fecha_entrada);
 --             TABLA: servicio
 -- ==========================================
 CREATE TABLE servicio (
-    id_servicio SERIAL PRIMARY KEY,
+    id_servicio BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nombre_servicio VARCHAR(100) NOT NULL,
     costo_unitario NUMERIC(10,2) NOT NULL
 );
@@ -121,7 +121,7 @@ ADD CONSTRAINT ck_costo_servicio CHECK (costo_unitario >= 0);
 --          TABLA: consumo_servicio
 -- ==========================================
 CREATE TABLE consumo_servicio (
-    id_consumo SERIAL PRIMARY KEY,
+    id_consumo BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     cantidad INT NOT NULL,
     fecha_consumo TIMESTAMP NOT NULL,
     id_reservacion INT NOT NULL,
@@ -139,7 +139,7 @@ ADD CONSTRAINT ck_cantidad_consumo CHECK (cantidad > 0);
 --             TABLA: empleado
 -- ==========================================
 CREATE TABLE empleado (
-    id_empleado SERIAL PRIMARY KEY,
+    id_empleado BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     dui VARCHAR(30) NOT NULL,
     nombre VARCHAR(100) NOT NULL,
     apellido VARCHAR(100) NOT NULL,
@@ -151,7 +151,7 @@ CREATE TABLE empleado (
 --             TABLA: factura
 -- ==========================================
 CREATE TABLE factura (
-    id_factura SERIAL PRIMARY KEY,
+    id_factura BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     numero_factura INT NOT NULL,
     fecha_emision TIMESTAMP NOT NULL,
     subtotal NUMERIC(10,2) NOT NULL,
@@ -169,3 +169,22 @@ CREATE TABLE factura (
 ALTER TABLE factura
 ADD CONSTRAINT ck_factura_valores
 CHECK (subtotal >= 0 AND impuestos >= 0 AND total_final >= 0);
+
+-- ==========================================
+--         TABLA: Detalles de factura
+-- ==========================================
+CREATE TABLE detalles_factura (
+    id_detalle BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_factura BIGINT NOT NULL,
+    id_servicio BIGINT NOT NULL,
+    cantidad INT NOT NULL,
+    precio NUMERIC(10,2) NOT NULL,
+    CONSTRAINT fk_detalle_factura FOREIGN KEY (id_factura)
+        REFERENCES factura(id_factura)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_detalle_servicio FOREIGN KEY (id_servicio)
+        REFERENCES servicio(id_servicio)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    CONSTRAINT ck_cantidad_detalle CHECK (cantidad > 0),
+    CONSTRAINT ck_precio_detalle CHECK (precio >= 0)
+);
