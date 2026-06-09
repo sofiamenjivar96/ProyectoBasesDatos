@@ -96,6 +96,31 @@ VALUES
 (4,'2026-06-21 20:00:00',6,1),
 (2,'2026-06-23 09:00:00',7,7);
 
+INSERT INTO Empleado (id_empleado, dpi, nombre, apellido, cargo) VALUES
+(1, '0123456789012', 'Carlos', 'Ramírez', 'Recepcionista'),
+(2, '0234567890123', 'María', 'López', 'Administrador'),
+(3, '0345678901234', 'José', 'Martínez', 'Cajero'),
+(4, '0456789012345', 'Ana', 'Hernández', 'Limpieza'),
+(5, '0567890123456', 'Luis', 'Gómez', 'Mantenimiento');
+
+INSERT INTO Factura 
+(id_factura, numero_factura, fecha_emision, subtotal, impuesto, total_final, id_reservacion, id_empleado) 
+VALUES
+(1, 'FAC-0001', '2026-06-01', 120.00, 15.60, 135.60, 1, 1),
+(2, 'FAC-0002', '2026-06-02', 180.00, 23.40, 203.40, 2, 2),
+(3, 'FAC-0003', '2026-06-03', 250.00, 32.50, 282.50, 3, 3),
+(4, 'FAC-0004', '2026-06-04', 95.00, 12.35, 107.35, 4, 4),
+(5, 'FAC-0005', '2026-06-05', 300.00, 39.00, 339.00, 5, 5);
+
+INSERT INTO detalles_factura 
+(id_factura, id_servicio, cantidad, precio) 
+VALUES
+(1, 1, 2, 15.00),
+(1, 3, 1, 25.00),
+(2, 2, 3, 10.00),
+(3, 4, 1, 40.00),
+(4, 5, 2, 20.00);
+
 -- =========================
 --        Updates
 -- =========================
@@ -143,73 +168,3 @@ DELETE FROM consumo_servicio WHERE id_servicio = 7;  -- se borran consumos prime
 DELETE FROM servicio WHERE id_servicio = 7 RETURNING *;
 COMMIT;
 
--- =========================
---        Selects
--- =========================
--- Select de hotel
-SELECT * FROM hotel;
-
--- Select con where para ver los que tengan el estado Disponible
-SELECT 
-    id_habitacion,
-    numero,
-    piso,
-    estado,
-    id_hotel
-FROM habitacion
-WHERE estado = 'Disponible';
-
--- Select con inner join, para visualizar los datos de las tablas de reservacion, huesped y habitacion
-SELECT 
-    r.id_reservacion,
-    h.nombre AS nombre_huesped,
-    h.apellido AS apellido_huesped,
-    ha.numero AS numero_habitacion,
-    r.fecha_inicio,
-    r.fecha_fin,
-    r.estado_reserva
-FROM reservacion r
-INNER JOIN huesped h 
-    ON r.id_huesped = h.id_huesped
-INNER JOIN habitacion ha 
-    ON r.id_habitacion = ha.id_habitacion;
-
--- Select con group by, mostrando cuantas habitaciones tiene cada hotel
-SELECT 
-    ho.nombre AS hotel,
-    COUNT(ha.id_habitacion) AS total_habitaciones
-FROM hotel ho
-INNER JOIN habitacion ha 
-    ON ho.id_hotel = ha.id_hotel
-GROUP BY ho.nombre
-ORDER BY total_habitaciones DESC;
-
--- Select multiples tablas, mostrando el total a pagar por el hospedaje
-SELECT 
-    r.id_reservacion,
-    hu.nombre AS nombre_huesped,
-    hu.apellido AS apellido_huesped,
-    th.descripcion AS tipo_habitacion,
-    th.precio_noche,
-    r.fecha_inicio,
-    r.fecha_fin,
-    (r.fecha_fin - r.fecha_inicio) AS noches,
-    (r.fecha_fin - r.fecha_inicio) * th.precio_noche AS total_habitacion
-FROM reservacion r
-INNER JOIN huesped hu 
-    ON r.id_huesped = hu.id_huesped
-INNER JOIN habitacion ha 
-    ON r.id_habitacion = ha.id_habitacion
-INNER JOIN tipo_habitacion th 
-    ON ha.id_tipo = th.id_tipo;
---SELECT finales de verificacion
-SELECT * FROM hotel;
-SELECT * FROM tipo_habitacion;
-SELECT * FROM habitacion;
-SELECT * FROM huesped;
-SELECT * FROM reservacion;
-SELECT * FROM check_in_out;
-SELECT * FROM servicio;
-SELECT * FROM consumo_servicio;
-SELECT * FROM empleado;
-SELECT * FROM factura;
