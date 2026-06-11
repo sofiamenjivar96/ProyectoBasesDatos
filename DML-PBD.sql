@@ -96,6 +96,31 @@ VALUES
 (4,'2026-06-21 20:00:00',6,1),
 (2,'2026-06-23 09:00:00',7,7);
 
+INSERT INTO Empleado (id_empleado, dpi, nombre, apellido, cargo) VALUES
+(1, '0123456789012', 'Carlos', 'Ramírez', 'Recepcionista'),
+(2, '0234567890123', 'María', 'López', 'Administrador'),
+(3, '0345678901234', 'José', 'Martínez', 'Cajero'),
+(4, '0456789012345', 'Ana', 'Hernández', 'Limpieza'),
+(5, '0567890123456', 'Luis', 'Gómez', 'Mantenimiento');
+
+INSERT INTO Factura 
+(id_factura, numero_factura, fecha_emision, subtotal, impuesto, total_final, id_reservacion, id_empleado) 
+VALUES
+(1, 'FAC-0001', '2026-06-01', 120.00, 15.60, 135.60, 1, 1),
+(2, 'FAC-0002', '2026-06-02', 180.00, 23.40, 203.40, 2, 2),
+(3, 'FAC-0003', '2026-06-03', 250.00, 32.50, 282.50, 3, 3),
+(4, 'FAC-0004', '2026-06-04', 95.00, 12.35, 107.35, 4, 4),
+(5, 'FAC-0005', '2026-06-05', 300.00, 39.00, 339.00, 5, 5);
+
+INSERT INTO detalles_factura 
+(id_factura, id_servicio, cantidad, precio) 
+VALUES
+(1, 1, 2, 15.00),
+(1, 3, 1, 25.00),
+(2, 2, 3, 10.00),
+(3, 4, 1, 40.00),
+(4, 5, 2, 20.00);
+
 -- =========================
 --        Updates
 -- =========================
@@ -129,187 +154,17 @@ WHERE id_reservacion = 1;
 -- =========================
 --        Deletes
 -- =========================
--- 1. Eliminar un consumo de servicio específico
+-- NOTA:
+-- No se incluyen deletes de hotel, huésped o tipo_habitación porque el modelo usa ON DELETE RESTRICT y no permite eliminar
+-- registros con dependencias (reservaciones, habitaciones, etc.)
+
+
 DELETE FROM consumo_servicio
 WHERE id_reservacion = 4
   AND id_servicio = 4;
 
--- 2. Eliminar Huespéd
--- Ver huésped que se va a eliminar
-SELECT * FROM huesped
-WHERE id_huesped = 1;
-
--- Ver reservaciones relacionadas
-SELECT * FROM reservacion
-WHERE id_huesped = 1;
-
--- Ver check-in/out relacionados
-SELECT cio.* 
-FROM check_in_out cio
-INNER JOIN reservacion r 
-    ON cio.id_reservacion = r.id_reservacion
-WHERE r.id_huesped = 1;
-
--- Eliminar huésped
-DELETE FROM huesped
-WHERE id_huesped = 1;
-
--- 3. Eliminar Hotel
--- Ver hotel que se va a eliminar
-SELECT * FROM hotel
-WHERE id_hotel = 3;
-
--- Ver habitaciones del hotel
-SELECT * FROM habitacion
-WHERE id_hotel = 3;
-
--- Ver reservaciones relacionadas con habitaciones del hotel
-SELECT r.*
-FROM reservacion r
-INNER JOIN habitacion h 
-    ON r.id_habitacion = h.id_habitacion
-WHERE h.id_hotel = 3;
-
--- Ver check-in/out relacionados
-SELECT cio.*
-FROM check_in_out cio
-INNER JOIN reservacion r 
-    ON cio.id_reservacion = r.id_reservacion
-INNER JOIN habitacion h 
-    ON r.id_habitacion = h.id_habitacion
-WHERE h.id_hotel = 3;
-
--- Ver consumos relacionados
-SELECT cs.*
-FROM consumo_servicio cs
-INNER JOIN reservacion r 
-    ON cs.id_reservacion = r.id_reservacion
-INNER JOIN habitacion h 
-    ON r.id_habitacion = h.id_habitacion
-WHERE h.id_hotel = 3;
-
--- Eliminar hotel
-DELETE FROM hotel
-WHERE id_hotel = 3;
-
--- 4. Eliminar tipo de habitación
 BEGIN;
+DELETE FROM consumo_servicio WHERE id_servicio = 7;  -- se borran consumos primero
+DELETE FROM servicio WHERE id_servicio = 7 RETURNING *;
+COMMIT;
 
--- Ver tipo de habitación que se va a eliminar
-SELECT *
-FROM tipo_habitacion
-WHERE id_tipo = 6;
-
--- Ver habitaciones relacionadas
-SELECT *
-FROM habitacion
-WHERE id_tipo = 6;
-
--- Ver reservaciones relacionadas
-SELECT r.*
-FROM reservacion r
-INNER JOIN habitacion h
-    ON r.id_habitacion = h.id_habitacion
-WHERE h.id_tipo = 6;
-
--- Ver check_in_out relacionados
-SELECT cio.*
-FROM check_in_out cio
-INNER JOIN reservacion r
-    ON cio.id_reservacion = r.id_reservacion
-INNER JOIN habitacion h
-    ON r.id_habitacion = h.id_habitacion
-WHERE h.id_tipo = 6;
-
--- Ver consumos relacionados
-SELECT cs.*
-FROM consumo_servicio cs
-INNER JOIN reservacion r
-    ON cs.id_reservacion = r.id_reservacion
-INNER JOIN habitacion h
-    ON r.id_habitacion = h.id_habitacion
-WHERE h.id_tipo = 6;
-
--- Eliminar tipo de habitación y mostrar el registro eliminado
-DELETE FROM tipo_habitacion
-WHERE id_tipo = 6
-
-RETURNING *;
-
--- 5. Eliminar Servicio
-BEGIN;
-
--- Ver servicio que se va a eliminar
-SELECT *
-FROM servicio
-WHERE id_servicio = 7;
-
--- Ver consumos asociados
-SELECT *
-FROM consumo_servicio
-WHERE id_servicio = 7;
-
--- Eliminar servicio y mostrar el registro eliminado
-DELETE FROM servicio
-WHERE id_servicio = 7
-RETURNING *;
-
--- =========================
---        Selects
--- =========================
--- Select de hotel
-SELECT * FROM hotel;
-
--- Select con where para ver los que tengan el estado Disponible
-SELECT 
-    id_habitacion,
-    numero,
-    piso,
-    estado,
-    id_hotel
-FROM habitacion
-WHERE estado = 'Disponible';
-
--- Select con inner join, para visualizar los datos de las tablas de reservacion, huesped y habitacion
-SELECT 
-    r.id_reservacion,
-    h.nombre AS nombre_huesped,
-    h.apellido AS apellido_huesped,
-    ha.numero AS numero_habitacion,
-    r.fecha_inicio,
-    r.fecha_fin,
-    r.estado_reserva
-FROM reservacion r
-INNER JOIN huesped h 
-    ON r.id_huesped = h.id_huesped
-INNER JOIN habitacion ha 
-    ON r.id_habitacion = ha.id_habitacion;
-
--- Select con group by, mostrando cuantas habitaciones tiene cada hotel
-SELECT 
-    ho.nombre AS hotel,
-    COUNT(ha.id_habitacion) AS total_habitaciones
-FROM hotel ho
-INNER JOIN habitacion ha 
-    ON ho.id_hotel = ha.id_hotel
-GROUP BY ho.nombre
-ORDER BY total_habitaciones DESC;
-
--- Select multiples tablas, mostrando el total a pagar por el hospedaje
-SELECT 
-    r.id_reservacion,
-    hu.nombre AS nombre_huesped,
-    hu.apellido AS apellido_huesped,
-    th.descripcion AS tipo_habitacion,
-    th.precio_noche,
-    r.fecha_inicio,
-    r.fecha_fin,
-    (r.fecha_fin - r.fecha_inicio) AS noches,
-    (r.fecha_fin - r.fecha_inicio) * th.precio_noche AS total_habitacion
-FROM reservacion r
-INNER JOIN huesped hu 
-    ON r.id_huesped = hu.id_huesped
-INNER JOIN habitacion ha 
-    ON r.id_habitacion = ha.id_habitacion
-INNER JOIN tipo_habitacion th 
-    ON ha.id_tipo = th.id_tipo;

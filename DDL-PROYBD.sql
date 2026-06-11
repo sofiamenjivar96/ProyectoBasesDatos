@@ -1,3 +1,10 @@
+<<<<<<< HEAD
+=======
+--......................................................
+--          SISTEMA DE RESERVAS DE HOTEL
+-- Script DDL: Creación de tablas y restricciones
+
+>>>>>>> 03e2e1f952490b5f316d92a1f3b03c8e63d6d5cf
 -- ==========================================
 --             ELIMINAR TABLAS
 -- ==========================================
@@ -28,7 +35,11 @@ CREATE TABLE hotel (
 -- ==========================================
 CREATE TABLE tipo_habitacion (
     id_tipo BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+<<<<<<< HEAD
     descripcion TEXT NOT NULL,
+=======
+    descripcion TEXT,
+>>>>>>> 03e2e1f952490b5f316d92a1f3b03c8e63d6d5cf
     precio_noche NUMERIC(10,2) NOT NULL,
     CONSTRAINT ck_precio_habitacion
         CHECK (precio_noche > 0)
@@ -40,6 +51,7 @@ CREATE TABLE tipo_habitacion (
 CREATE TABLE habitacion (
     id_habitacion BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     numero VARCHAR(10) NOT NULL,
+<<<<<<< HEAD
     piso INT NOT NULL,
     estado VARCHAR(20) NOT NULL DEFAULT 'Disponible',
     id_tipo BIGINT NOT NULL,
@@ -65,6 +77,18 @@ CREATE TABLE habitacion (
 
     CONSTRAINT uq_habitacion
         UNIQUE (id_hotel, numero)
+=======
+    piso INT,
+    estado VARCHAR(20) NOT NULL DEFAULT 'Disponible',
+    id_tipo BIGINT NOT NULL,
+    id_hotel BIGINT NOT NULL,
+    CONSTRAINT fk_habitacion_tipo FOREIGN KEY (id_tipo) REFERENCES tipo_habitacion(id_tipo)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    CONSTRAINT fk_habitacion_hotel FOREIGN KEY (id_hotel) REFERENCES hotel(id_hotel)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    CONSTRAINT ck_estado_habitacion CHECK (estado IN ('Disponible', 'Ocupada', 'Mantenimiento')),
+    CONSTRAINT uq_habitacion UNIQUE (id_hotel, numero)
+>>>>>>> 03e2e1f952490b5f316d92a1f3b03c8e63d6d5cf
 );
 
 -- ==========================================
@@ -77,9 +101,13 @@ CREATE TABLE huesped (
     apellido VARCHAR(100) NOT NULL,
     email VARCHAR(100),
     telefono VARCHAR(20),
+<<<<<<< HEAD
 
     CONSTRAINT uq_huesped_dui
         UNIQUE (dui_pasaporte)
+=======
+    CONSTRAINT uq_huesped_dui UNIQUE (dui_pasaporte)
+>>>>>>> 03e2e1f952490b5f316d92a1f3b03c8e63d6d5cf
 );
 
 -- ==========================================
@@ -93,6 +121,7 @@ CREATE TABLE reservacion (
     estado_reserva VARCHAR(20) NOT NULL DEFAULT 'Activa',
     id_huesped BIGINT NOT NULL,
     id_habitacion BIGINT NOT NULL,
+<<<<<<< HEAD
 
     CONSTRAINT fk_reservacion_huesped
         FOREIGN KEY (id_huesped)
@@ -114,6 +143,14 @@ CREATE TABLE reservacion (
             fecha_reserva <= fecha_inicio
             AND fecha_fin > fecha_inicio
         )
+=======
+    CONSTRAINT fk_reservacion_huesped FOREIGN KEY (id_huesped) REFERENCES huesped(id_huesped)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    CONSTRAINT fk_reservacion_habitacion FOREIGN KEY (id_habitacion) REFERENCES habitacion(id_habitacion)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    CONSTRAINT ck_estado_reserva CHECK (estado_reserva IN ('Activa', 'Cancelada', 'Finalizada')),
+    CONSTRAINT ck_fechas_reserva CHECK (fecha_fin > fecha_inicio)
+>>>>>>> 03e2e1f952490b5f316d92a1f3b03c8e63d6d5cf
 );
 
 -- ==========================================
@@ -121,6 +158,7 @@ CREATE TABLE reservacion (
 -- ==========================================
 CREATE TABLE check_in_out (
     id_registro BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+<<<<<<< HEAD
     fecha_entrada TIMESTAMP NOT NULL,
     fecha_salida TIMESTAMP,
     id_reservacion BIGINT NOT NULL,
@@ -136,6 +174,14 @@ CREATE TABLE check_in_out (
             fecha_salida IS NULL
             OR fecha_salida > fecha_entrada
         )
+=======
+    fecha_entrada TIMESTAMP,
+    fecha_salida TIMESTAMP,
+    id_reservacion BIGINT NOT NULL,
+    CONSTRAINT fk_check_reservacion FOREIGN KEY (id_reservacion) REFERENCES reservacion(id_reservacion)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT ck_fechas_checkin CHECK (fecha_salida IS NULL OR fecha_salida > fecha_entrada)
+>>>>>>> 03e2e1f952490b5f316d92a1f3b03c8e63d6d5cf
 );
 
 -- ==========================================
@@ -145,9 +191,13 @@ CREATE TABLE servicio (
     id_servicio BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nombre_servicio VARCHAR(100) NOT NULL,
     costo_unitario NUMERIC(10,2) NOT NULL,
+<<<<<<< HEAD
 
     CONSTRAINT ck_costo_servicio
         CHECK (costo_unitario >= 0)
+=======
+    CONSTRAINT ck_costo_servicio CHECK (costo_unitario >= 0)
+>>>>>>> 03e2e1f952490b5f316d92a1f3b03c8e63d6d5cf
 );
 
 -- ==========================================
@@ -159,6 +209,7 @@ CREATE TABLE consumo_servicio (
     fecha_consumo TIMESTAMP NOT NULL,
     id_reservacion BIGINT NOT NULL,
     id_servicio BIGINT NOT NULL,
+<<<<<<< HEAD
 
     CONSTRAINT fk_consumo_reservacion
         FOREIGN KEY (id_reservacion)
@@ -174,6 +225,13 @@ CREATE TABLE consumo_servicio (
 
     CONSTRAINT ck_cantidad_consumo
         CHECK (cantidad > 0)
+=======
+    CONSTRAINT fk_consumo_reservacion FOREIGN KEY (id_reservacion) REFERENCES reservacion(id_reservacion)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_consumo_servicio FOREIGN KEY (id_servicio) REFERENCES servicio(id_servicio)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    CONSTRAINT ck_cantidad_consumo CHECK (cantidad > 0)
+>>>>>>> 03e2e1f952490b5f316d92a1f3b03c8e63d6d5cf
 );
 
 -- ==========================================
@@ -202,6 +260,7 @@ CREATE TABLE factura (
     total_final NUMERIC(10,2) NOT NULL,
     id_reservacion BIGINT NOT NULL,
     id_empleado BIGINT NOT NULL,
+<<<<<<< HEAD
 
     CONSTRAINT uq_numero_factura
         UNIQUE (numero_factura),
@@ -231,6 +290,18 @@ CREATE TABLE factura (
 
 -- ==========================================
 --         TABLA: DETALLES_FACTURA
+=======
+    CONSTRAINT fk_factura_reservacion FOREIGN KEY (id_reservacion) REFERENCES reservacion(id_reservacion)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    CONSTRAINT fk_factura_empleado FOREIGN KEY (id_empleado) REFERENCES empleado(id_empleado)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    CONSTRAINT uq_factura_reservacion UNIQUE (id_reservacion),
+    CONSTRAINT ck_factura_valores CHECK (subtotal >= 0 AND impuestos >= 0 AND total_final >= 0)
+);
+
+-- ==========================================
+--         TABLA: Detalles de factura
+>>>>>>> 03e2e1f952490b5f316d92a1f3b03c8e63d6d5cf
 -- ==========================================
 CREATE TABLE detalles_factura (
     id_detalle BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -238,6 +309,7 @@ CREATE TABLE detalles_factura (
     id_servicio BIGINT NOT NULL,
     cantidad INT NOT NULL,
     precio NUMERIC(10,2) NOT NULL,
+<<<<<<< HEAD
 
     CONSTRAINT fk_detalle_factura
         FOREIGN KEY (id_factura)
@@ -257,3 +329,12 @@ CREATE TABLE detalles_factura (
     CONSTRAINT ck_precio_detalle
         CHECK (precio >= 0)
 );
+=======
+    CONSTRAINT fk_detalle_factura FOREIGN KEY (id_factura) REFERENCES factura(id_factura)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_detalle_servicio FOREIGN KEY (id_servicio) REFERENCES servicio(id_servicio)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    CONSTRAINT ck_cantidad_detalle CHECK (cantidad > 0),
+    CONSTRAINT ck_precio_detalle CHECK (precio >= 0)
+);
+>>>>>>> 03e2e1f952490b5f316d92a1f3b03c8e63d6d5cf
