@@ -1,15 +1,24 @@
+--......................................................
+--          SISTEMA DE RESERVAS DE HOTEL
+-- .....................................................
 
-insert into hotel (id_hotel, nombre, direccion, telefono) overriding system value
-values
+
+-- ==========================================
+--                   HOTELES
+-- ==========================================
+INSERT INTO hotel (id_hotel, nombre, direccion, telefono) OVERRIDING SYSTEM VALUE
+VALUES
     (1, 'hotel costa azul', 'avenida el mar #12, la libertad', '2222-1001'),
     (2, 'hotel volcan verde', 'calle al boqueron #45, san salvador', '2222-1002'),
     (3, 'hotel plaza central', '1a calle poniente #8, santa tecla', '2222-1003'),
     (4, 'hotel brisas del lago', 'bulevar del lago #21, ilopango', '2222-1004'),
     (5, 'hotel jardin real', 'colonia escalon, pasaje 7 #30, san salvador', '2222-1005');
 
-
-insert into tipo_habitacion (id_tipo, descripcion, precio_noche) overriding system value
-values
+-- ==========================================
+--       TIPOS DE HABITACION 
+-- ==========================================
+INSERT INTO tipo_habitacion (id_tipo, descripcion, precio_noche) OVERRIDING SYSTEM VALUE
+VALUES
     (1, 'individual economica', 30.50),
     (2, 'individual estandar', 40.00),
     (3, 'individual superior', 49.50),
@@ -61,9 +70,12 @@ values
     (49, 'loft urbano 2', 137.00),
     (50, 'apartamento una habitacion 2', 137.00);
 
-
-insert into habitacion (id_habitacion, numero, piso, estado, id_tipo, id_hotel) overriding system value
-values
+-- ==========================================
+--               HABITACIONES 
+-- ==========================================
+INSERT INTO habitacion (id_habitacion, numero, piso, estado, id_tipo, id_hotel) OVERRIDING SYSTEM VALUE
+VALUES
+    -- Hotel 1 (costa azul)
     (1, '101', 1, 'Mantenimiento', 1, 1),
     (2, '102', 1, 'Disponible', 2, 1),
     (3, '103', 1, 'Ocupada', 3, 1),
@@ -84,6 +96,7 @@ values
     (18, '502', 5, 'Ocupada', 18, 1),
     (19, '503', 5, 'Mantenimiento', 19, 1),
     (20, '504', 5, 'Disponible', 20, 1),
+    -- Hotel 2 (volcan verde)
     (21, '101', 1, 'Disponible', 21, 2),
     (22, '102', 1, 'Ocupada', 22, 2),
     (23, '103', 1, 'Mantenimiento', 23, 2),
@@ -104,6 +117,7 @@ values
     (38, '502', 5, 'Mantenimiento', 38, 2),
     (39, '503', 5, 'Disponible', 39, 2),
     (40, '504', 5, 'Ocupada', 40, 2),
+    -- Hotel 3 (plaza central)
     (41, '101', 1, 'Ocupada', 41, 3),
     (42, '102', 1, 'Mantenimiento', 42, 3),
     (43, '103', 1, 'Disponible', 43, 3),
@@ -124,6 +138,7 @@ values
     (58, '502', 5, 'Disponible', 8, 3),
     (59, '503', 5, 'Ocupada', 9, 3),
     (60, '504', 5, 'Mantenimiento', 10, 3),
+    -- Hotel 4 (brisas del lago)
     (61, '101', 1, 'Mantenimiento', 11, 4),
     (62, '102', 1, 'Disponible', 12, 4),
     (63, '103', 1, 'Ocupada', 13, 4),
@@ -144,6 +159,7 @@ values
     (78, '502', 5, 'Ocupada', 28, 4),
     (79, '503', 5, 'Mantenimiento', 29, 4),
     (80, '504', 5, 'Disponible', 30, 4),
+    -- Hotel 5 (jardin real)
     (81, '101', 1, 'Disponible', 31, 5),
     (82, '102', 1, 'Ocupada', 32, 5),
     (83, '103', 1, 'Mantenimiento', 33, 5),
@@ -166,8 +182,11 @@ values
     (100, '504', 5, 'Ocupada', 50, 5);
 
 
-insert into huesped (id_huesped, dui_pasaporte, nombre, apellido, email, telefono) overriding system value
-values
+-- ==========================================
+--               HUESPEDES
+-- ==========================================
+INSERT INTO huesped (id_huesped, dui_pasaporte, nombre, apellido, email, telefono) OVERRIDING SYSTEM VALUE
+VALUES
     (1, '10000001-1', 'carlos', 'ramirez', 'carlos.ramirez1@correo.com', '71000137'),
     (2, '10000002-2', 'ana', 'hernandez', 'ana.hernandez2@correo.com', '71000274'),
     (3, '10000003-3', 'luis', 'lopez', 'luis.lopez3@correo.com', '71000411'),
@@ -220,8 +239,11 @@ values
     (50, '10000050-0', 'laura', 'campos', 'laura.campos50@correo.com', '71006850');
 
 
-insert into reservacion (id_reservacion, fecha_reserva, fecha_inicio, fecha_fin, estado_reserva, id_huesped, id_habitacion) overriding system value
-values
+-- ==========================================
+--           RESERVACIONES 
+-- ==========================================
+INSERT INTO reservacion (id_reservacion, fecha_reserva, fecha_inicio, fecha_fin, estado_reserva, id_huesped, id_habitacion) OVERRIDING SYSTEM VALUE
+VALUES
     (1, '2025-12-07', '2026-01-05', '2026-01-10', 'Activa', 1, 1),
     (2, '2025-12-19', '2026-01-08', '2026-01-13', 'Activa', 2, 2),
     (3, '2025-12-18', '2026-01-11', '2026-01-15', 'Finalizada', 3, 3),
@@ -304,8 +326,11 @@ values
     (80, '2026-08-01', '2026-08-30', '2026-09-06', 'Cancelada', 30, 80);
 
 
-insert into servicio (id_servicio, nombre_servicio, costo_unitario) overriding system value
-values
+-- ==========================================
+--                SERVICIOS
+-- ==========================================
+INSERT INTO servicio (id_servicio, nombre_servicio, costo_unitario) OVERRIDING SYSTEM VALUE
+VALUES
     (1, 'desayuno buffet', 8.50),
     (2, 'almuerzo ejecutivo', 12.00),
     (3, 'cena a la carta', 16.50),
@@ -328,8 +353,11 @@ values
     (20, 'late check out', 20.00);
 
 
-insert into consumo_servicio (id_consumo, cantidad, fecha_consumo, id_reservacion, id_servicio) overriding system value
-values
+-- ==========================================
+--         CONSUMO DE SERVICIOS
+-- ==========================================
+INSERT INTO consumo_servicio (id_consumo, cantidad, fecha_consumo, id_reservacion, id_servicio) OVERRIDING SYSTEM VALUE
+VALUES
     (1, 2, '2026-01-06 23:00:00', 1, 7),
     (2, 4, '2026-01-09 16:00:00', 2, 14),
     (3, 2, '2026-01-13 13:00:00', 3, 1),
@@ -412,8 +440,11 @@ values
     (80, 2, '2026-08-30 19:00:00', 80, 20);
 
 
-insert into empleado (id_empleado, dui, nombre, apellido, cargo) overriding system value
-values
+-- ==========================================
+--               EMPLEADOS
+-- ==========================================
+INSERT INTO empleado (id_empleado, dui, nombre, apellido, cargo) OVERRIDING SYSTEM VALUE
+VALUES
     (1, '20000001-4', 'diego', 'torres', 'recepcionista'),
     (2, '20000002-5', 'valeria', 'flores', 'administrador'),
     (3, '20000003-6', 'miguel', 'rivera', 'cajero'),
@@ -436,8 +467,11 @@ values
     (20, '20000020-3', 'natalia', 'calderon', 'mantenimiento');
 
 
-insert into factura (id_factura, numero_factura, fecha_emision, subtotal, impuestos, total_final, id_reservacion, id_empleado) overriding system value
-values
+-- ==========================================
+--                  FACTURAS
+-- ==========================================
+INSERT INTO factura (id_factura, numero_factura, fecha_emision, subtotal, impuestos, total_final, id_reservacion, id_empleado) OVERRIDING SYSTEM VALUE
+VALUES
     (1, 10001, '2026-01-10 11:00:00', 202.00, 26.26, 228.26, 1, 1),
     (2, 10002, '2026-01-13 11:00:00', 210.00, 27.30, 237.30, 2, 2),
     (3, 10003, '2026-01-15 11:00:00', 220.00, 28.60, 248.60, 3, 3),
@@ -490,8 +524,11 @@ values
     (50, 10050, '2026-06-05 11:00:00', 556.00, 72.28, 628.28, 50, 10);
 
 
-insert into detalles_factura (id_detalle, id_factura, id_servicio, cantidad, precio) overriding system value
-values
+-- ==========================================
+--          DETALLES DE FACTURA
+-- ==========================================
+INSERT INTO detalles_factura (id_detalle, id_factura, id_servicio, cantidad, precio) OVERRIDING SYSTEM VALUE
+VALUES
     (1, 1, 3, 3, 16.50),
     (2, 2, 6, 1, 10.00),
     (3, 3, 9, 1, 22.00),
@@ -543,9 +580,11 @@ values
     (49, 49, 7, 2, 25.00),
     (50, 50, 10, 2, 4.00);
 
-
-insert into check_in_out (id_registro, fecha_entrada, fecha_salida, id_reservacion) overriding system value
-values
+-- ==========================================
+--               CHECK IN / OUT
+-- ==========================================
+INSERT INTO check_in_out (id_registro, fecha_entrada, fecha_salida, id_reservacion) OVERRIDING SYSTEM VALUE
+VALUES
     (1, '2026-01-05 15:00:00', '2026-01-10 11:00:00', 1),
     (2, '2026-01-08 15:00:00', '2026-01-13 11:00:00', 2),
     (3, '2026-01-11 15:00:00', '2026-01-15 11:00:00', 3),
@@ -598,65 +637,68 @@ values
     (50, '2026-06-01 15:00:00', '2026-06-05 11:00:00', 50);
 
 
--- reinicio de identidades para que los siguientes registros continúen después de los ids insertados
-alter table hotel alter column id_hotel restart with 6;
-alter table tipo_habitacion alter column id_tipo restart with 51;
-alter table habitacion alter column id_habitacion restart with 101;
-alter table huesped alter column id_huesped restart with 51;
-alter table reservacion alter column id_reservacion restart with 81;
-alter table check_in_out alter column id_registro restart with 51;
-alter table servicio alter column id_servicio restart with 21;
-alter table consumo_servicio alter column id_consumo restart with 81;
-alter table empleado alter column id_empleado restart with 21;
-alter table factura alter column id_factura restart with 51;
-alter table detalles_factura alter column id_detalle restart with 51;
+-- ==========================================
+--      REINICIO DE IDENTIDADES
+-- ==========================================
+ALTER TABLE hotel ALTER COLUMN id_hotel RESTART WITH 6;
+ALTER TABLE tipo_habitacion ALTER COLUMN id_tipo RESTART WITH 51;
+ALTER TABLE habitacion ALTER COLUMN id_habitacion RESTART WITH 101;
+ALTER TABLE huesped ALTER COLUMN id_huesped RESTART WITH 51;
+ALTER TABLE reservacion ALTER COLUMN id_reservacion RESTART WITH 81;
+ALTER TABLE check_in_out ALTER COLUMN id_registro RESTART WITH 51;
+ALTER TABLE servicio ALTER COLUMN id_servicio RESTART WITH 21;
+ALTER TABLE consumo_servicio ALTER COLUMN id_consumo RESTART WITH 81;
+ALTER TABLE empleado ALTER COLUMN id_empleado RESTART WITH 21;
+ALTER TABLE factura ALTER COLUMN id_factura RESTART WITH 51;
+ALTER TABLE detalles_factura ALTER COLUMN id_detalle RESTART WITH 51;
 
-commit;
+COMMIT;
 
+-- ==========================================
+--              UPDATES
+-- ==========================================
 
--- =========================
---        Updates
--- =========================
-
---1. Cambiar teléfono del Hotel Paradise
+-- 1. Cambiar teléfono del Hotel Costa Azul
 UPDATE hotel
 SET telefono = '2222-9999'
 WHERE nombre = 'hotel costa azul';
 
---2. Aumentar el precio de la habitación Suite
+-- 2. Aumentar el precio de la habitación Suite Junior 2
 UPDATE tipo_habitacion
 SET precio_noche = 165.00
 WHERE descripcion = 'suite junior 2';
 
---3. Actualizar email del huésped Carlos Martínez
+-- 3. Actualizar email del huésped Carlos Ramírez
 UPDATE huesped
-SET email = 'carlos.martinez@gmail.com'
+SET email = 'carlos.ramirez@gmail.com'
 WHERE dui_pasaporte = '10000001-1';
 
---4. Cambiar estado de una habitación de mantenimiento a disponible
+-- 4. Cambiar estado de una habitación de mantenimiento a disponible
 UPDATE habitacion
 SET estado = 'Disponible'
 WHERE numero = '201'
   AND id_hotel = 3;
 
---5. Cambiar estado de una reservación activa a finalizada
+-- 5. Cambiar estado de una reservación activa a finalizada
 UPDATE reservacion
 SET estado_reserva = 'Finalizada'
 WHERE id_reservacion = 1;
 
--- =========================
---        Deletes
--- =========================
--- NOTA:
--- No se incluyen deletes de hotel, huésped o tipo_habitación porque el modelo usa ON DELETE RESTRICT y no permite eliminar
+
+-- ==========================================
+--              DELETES
+-- ==========================================
+-- NOTA: No se incluyen deletes de hotel, huésped o tipo_habitación 
+-- porque el modelo usa ON DELETE RESTRICT y no permite eliminar
 -- registros con dependencias (reservaciones, habitaciones, etc.)
 
-
-DELETE FROM consumo_servicio
+DELETE FROM consumo_servicio -- Eliminar un consumo específico
 WHERE id_reservacion = 4
   AND id_servicio = 4;
 
-BEGIN;
-DELETE FROM consumo_servicio WHERE id_servicio = 7;  -- se borran consumos primero
-DELETE FROM servicio WHERE id_servicio = 7 RETURNING *;
+
+BEGIN; -- Eliminar un servicio sin consumos activos 
+DELETE FROM detalles_factura WHERE id_servicio = 7;  
+DELETE FROM consumo_servicio  WHERE id_servicio = 7;
+DELETE FROM servicio          WHERE id_servicio = 7 RETURNING *;
 COMMIT;
