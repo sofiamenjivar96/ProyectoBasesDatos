@@ -1,28 +1,9 @@
--- ==========================================================
+-- .........................................................
 --           SISTEMA DE RESERVAS DE HOTEL
--- ==========================================================
-
--- ====================================================
---   FUNCIÓN PARA CALCULAR TOTAL DE HOSPEDAJE
--- ====================================================
-CREATE OR REPLACE FUNCTION calcular_total_final(p_id_reservacion BIGINT)
-RETURNS NUMERIC(10,2) AS $$
-DECLARE
-    v_total NUMERIC(10,2);
-BEGIN
-    SELECT (r.fecha_fin - r.fecha_inicio) * th.precio_noche
-    INTO v_total
-    FROM reservacion r
-    INNER JOIN habitacion ha ON r.id_habitacion = ha.id_habitacion
-    INNER JOIN tipo_habitacion th ON ha.id_tipo = th.id_tipo
-    WHERE r.id_reservacion = p_id_reservacion;
-    
-    RETURN COALESCE(v_total, 0);
-END;
-$$ LANGUAGE plpgsql;
+-- ..........................................................
 
 -- ==========================================
---          CONSULTAS PRINCIPALES
+--                CONSULTAS
 -- ==========================================
 
 -- 1. Mostrar todos los hoteles
