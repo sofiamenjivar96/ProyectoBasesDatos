@@ -155,7 +155,7 @@ CREATE TABLE factura (
     CONSTRAINT fk_factura_empleado FOREIGN KEY (id_empleado) REFERENCES empleado(id_empleado)
         ON UPDATE CASCADE ON DELETE RESTRICT,
     CONSTRAINT uq_factura_reservacion UNIQUE (id_reservacion),
-    CONSTRAINT uq_numero_factura UNIQUE (numero_factura)
+    CONSTRAINT uq_numero_factura UNIQUE (numero_factura),
     CONSTRAINT ck_factura_valores CHECK (subtotal >= 0 AND impuestos >= 0 AND total_final >= 0)
 );
 
