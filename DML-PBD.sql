@@ -643,7 +643,7 @@ WHERE numero = '201'
 -- 5. Cambiar estado de una reservación activa a finalizada
 UPDATE reservacion
 SET estado_reserva = 'Finalizada'
-WHERE id_reservacion = 1;
+WHERE id_reservacion = 80;
 
 
 -- ==========================================
