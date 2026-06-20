@@ -122,6 +122,11 @@ GROUP BY th.descripcion
 ORDER BY total_reservaciones DESC;
 
 -- 11. Habitaciones disponibles en un rango de fechas
+WITH fechas AS (
+    SELECT 
+        '2026-07-01'::DATE AS fecha_inicio,  -- Cambiar aquí la fecha de inicio
+        '2026-07-05'::DATE AS fecha_fin      -- Cambiar aquí la fecha de fin
+)
 SELECT
     ha.id_habitacion,
     ha.numero,
@@ -132,13 +137,14 @@ SELECT
 FROM habitacion ha
 INNER JOIN tipo_habitacion th ON ha.id_tipo = th.id_tipo
 INNER JOIN hotel ho ON ha.id_hotel = ho.id_hotel
+CROSS JOIN fechas f
 WHERE ha.estado = 'Disponible'
 AND ha.id_habitacion NOT IN (
     SELECT id_habitacion
     FROM reservacion
     WHERE estado_reserva <> 'Cancelada'
-    AND fecha_inicio <= '2026-07-05'
-    AND fecha_fin >= '2026-07-01'
+    AND fecha_inicio <= f.fecha_fin
+    AND fecha_fin >= f.fecha_inicio
 )
 ORDER BY ho.nombre, th.precio_noche;
 
