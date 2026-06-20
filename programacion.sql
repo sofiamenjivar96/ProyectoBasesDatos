@@ -192,7 +192,7 @@ BEGIN
     
     -- Verifica disponibilidad de habitación
     IF (SELECT estado FROM habitacion WHERE id_habitacion = NEW.id_habitacion) != 'Disponible' THEN
-        RAISE WARNING 'La habitación % no está disponible (estado actual: %)',
+        RAISE EXCEPTION 'La habitación % no está disponible (estado actual: %)',
             NEW.id_habitacion, 
             (SELECT estado FROM habitacion WHERE id_habitacion = NEW.id_habitacion);
     END IF;
@@ -215,28 +215,34 @@ EXECUTE FUNCTION ocupar_habitacion();
 
 
 -- ==========================================================
--- TRIGGER 3: Liberar habitación al finalizar reservación
+-- TRIGGER 3: Liberar habitación al finalizar o cancelar reservación
 -- Devuelve la habitación al estado Disponible.
 -- ==========================================================
-CREATE OR REPLACE FUNCTION liberar_habitacion()
+CREATE OR REPLACE FUNCTION liberar_habitacion_por_cambio_estado()
 RETURNS TRIGGER AS $$
 BEGIN
-    IF NEW.estado_reserva = 'Finalizada' AND OLD.estado_reserva != 'Finalizada' THEN
+    -- Si el estado cambia a Finalizada o Cancelada, libera la habitación
+    IF NEW.estado_reserva IN ('Finalizada', 'Cancelada') AND OLD.estado_reserva NOT IN ('Finalizada', 'Cancelada') THEN
         UPDATE habitacion
         SET estado = 'Disponible'
         WHERE id_habitacion = NEW.id_habitacion;
         
-        RAISE NOTICE 'Habitación % liberada al finalizar reservación', NEW.id_habitacion;
+        RAISE NOTICE 'Habitación % liberada (Reservación % estado: %)', 
+            NEW.id_habitacion, NEW.id_reservacion, NEW.estado_reserva;
     END IF;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
+-- Eliminar los triggers antiguos
 DROP TRIGGER IF EXISTS tg_liberar_habitacion ON reservacion;
-CREATE TRIGGER tg_liberar_habitacion
+DROP TRIGGER IF EXISTS tg_liberar_habitacion_cancelada ON reservacion;
+
+-- Crear el trigger unificado
+CREATE TRIGGER tg_liberar_habitacion_estado
 AFTER UPDATE ON reservacion
 FOR EACH ROW
-EXECUTE FUNCTION liberar_habitacion();
+EXECUTE FUNCTION liberar_habitacion_por_cambio_estado();
 
 
 -- ==========================================================
@@ -279,33 +285,7 @@ EXECUTE FUNCTION verificar_disponibilidad_habitacion();
 
 
 -- ==========================================================
--- TRIGGER 5: Liberar habitación al cancelar reservación
--- Si la reservación se cancela, la habitación se libera.
--- ==========================================================
-CREATE OR REPLACE FUNCTION liberar_habitacion_cancelada()
-RETURNS TRIGGER AS $$
-BEGIN
-  
-    IF NEW.estado_reserva = 'Cancelada' AND OLD.estado_reserva != 'Cancelada' THEN
-        UPDATE habitacion
-        SET estado = 'Disponible'
-        WHERE id_habitacion = NEW.id_habitacion;
-        
-        RAISE NOTICE 'Habitación % liberada al cancelar reservación %', 
-            NEW.id_habitacion, NEW.id_reservacion;
-    END IF;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-DROP TRIGGER IF EXISTS tg_liberar_habitacion_cancelada ON reservacion;
-CREATE TRIGGER tg_liberar_habitacion_cancelada
-AFTER UPDATE ON reservacion
-FOR EACH ROW
-EXECUTE FUNCTION liberar_habitacion_cancelada();
-
--- ==========================================================
--- TRIGGER 6: Validar fechas de reservación
+-- TRIGGER 5: Validar fechas de reservación
 -- Verifica que las fechas de reserva sean coherentes.
 -- ==========================================================
 CREATE OR REPLACE FUNCTION validar_fechas_reservacion()
@@ -347,7 +327,7 @@ EXECUTE FUNCTION validar_fechas_reservacion();
 
 
 -- ==========================================================
--- TRIGGER 7: Validar reservaciones con fecha vencida
+-- TRIGGER 6: Validar reservaciones con fecha vencida
 -- Lanza advertencia si una reservación activa ya debería
 -- haber iniciado.
 -- ==========================================================
@@ -432,14 +412,13 @@ SELECT
     hu.telefono,
     hu.email,
     COUNT(r.id_reservacion) AS total_reservaciones,
-    calcular_total_final(r.id_reservacion) AS total_gastado
+    SUM(calcular_total_final(r.id_reservacion)) AS total_gastado  --  Suma todas las reservaciones
 FROM huesped hu
 INNER JOIN reservacion r ON hu.id_huesped = r.id_huesped
 WHERE r.estado_reserva IN ('Finalizada', 'Activa')
-GROUP BY hu.id_huesped, hu.nombre, hu.apellido, hu.telefono, hu.email, r.id_reservacion
+GROUP BY hu.id_huesped, hu.nombre, hu.apellido, hu.telefono, hu.email  -- Solo agrupa por huésped
 ORDER BY total_gastado DESC
 LIMIT 10;
-
 
 -- ==========================================================
 -- FUNCIÓN: Verificar disponibilidad por fechas
